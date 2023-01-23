@@ -12,7 +12,7 @@ class Misc
 {
 public:
 
-	static inline std::string programVersion = "1.5.2";
+	static inline std::string programVersion = "1.2.2";
 	static inline std::string latestVersion = "";
 
 	static void LaunchLegacyClient()
@@ -53,7 +53,7 @@ public:
 
 	static void CheckVersion()
 	{
-		std::string getLatest = HTTP::Request("GET", "https://api.github.com/repos/KebsCS/KBotExt/releases/latest");
+		std::string getLatest = HTTP::Request("GET", "https://api.github.com/repos/BennyExtreme/KBotExt/releases/latest");
 
 		Json::CharReaderBuilder builder;
 		const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
@@ -71,19 +71,19 @@ public:
 			{
 				if (latestNameSplit[i] != programVersionSplit[i])
 				{
-					if (MessageBoxA(0, "Open download website?", "New major version available", MB_YESNO | MB_SETFOREGROUND) == IDYES)
+					if (MessageBoxA(0, "Download latest version?", "New major version available", MB_YESNO | MB_SETFOREGROUND) == IDYES)
 					{
-						ShellExecuteW(0, 0, L"https://github.com/KebsCS/KBotExt/releases/latest", 0, 0, SW_SHOW);
+						ShellExecuteW(0, 0, L"https://github.com/BennyExtreme/KBotExt/releases/latest/download/KBotExt.exe", 0, 0, SW_SHOW);
 					}
 				}
 			}
 			if (latestTag != Misc::programVersion
 				&& std::find(S.ignoredVersions.begin(), S.ignoredVersions.end(), latestTag) == S.ignoredVersions.end())
 			{
-				const auto status = MessageBoxA(0, "Open download website?\nCancel to ignore this version forever", "New minor update available", MB_YESNOCANCEL | MB_SETFOREGROUND);
+				const auto status = MessageBoxA(0, "Download latest version?\nCancel to ignore this version forever", "New minor update available", MB_YESNOCANCEL | MB_SETFOREGROUND);
 				if (status == IDYES)
 				{
-					ShellExecuteW(0, 0, L"https://github.com/KebsCS/KBotExt/releases/latest", 0, 0, SW_SHOW);
+					ShellExecuteW(0, 0, L"https://github.com/BennyExtreme/KBotExt/releases/latest/download/KBotExt.exe", 0, 0, SW_SHOW);
 				}
 				else if (status == IDCANCEL)
 				{
@@ -334,7 +334,7 @@ namespace ImGui
 				ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
 			}
 			AddUnderLine(ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
-			ImGui::SetTooltip("  Open in browser\n%s", url);
+			ImGui::SetTooltip("Open in browser\n%s", url);
 		}
 		else
 		{

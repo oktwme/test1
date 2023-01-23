@@ -46,11 +46,17 @@ public:
 			if (ImGui::Button("ARURF"))
 				gameID = ARURF;
 
-			if (ImGui::Button("Nexus Blitz"))
+			/*if (ImGui::Button("Nexus Blitz"))
 				gameID = NexusBlitz;
 
-			/*if (ImGui::Button("URF"))
+			if (ImGui::Button("URF"))
 				gameID = 318;*/
+
+			if (ImGui::Button("Clash"))
+				gameID = Clash;
+
+			if (ImGui::Button("None"))
+				result = LCU::Request("DELETE", "https://127.0.0.1/lol-lobby/v2/lobby");
 
 			ImGui::NextColumn();
 
@@ -68,21 +74,17 @@ public:
 
 			ImGui::NextColumn();
 
+			if (ImGui::Button("TFT Fortune's Favor"))
+				gameID = TFTFortuneFavor;
+
 			if (ImGui::Button("TFT Tutorial"))
 				gameID = TFTTutorial;
 
 			if (ImGui::Button("Practice Tool"))
-			{
 				custom = R"({"customGameLobby":{"configuration":{"gameMode":"PRACTICETOOL","gameMutator":"","gameServerRegion":"","mapId":11,"mutators":{"id":1},"spectatorPolicy":"AllAllowed","teamSize":1},"lobbyName":"KBot","lobbyPassword":null},"isCustom":true})";
-			}
 
 			if (ImGui::Button("Practice Tool 5v5"))
-			{
 				custom = R"({"customGameLobby":{"configuration":{"gameMode":"PRACTICETOOL","gameMutator":"","gameServerRegion":"","mapId":11,"mutators":{"id":1},"spectatorPolicy":"AllAllowed","teamSize":5},"lobbyName":"KBot","lobbyPassword":null},"isCustom":true})";
-			}
-
-			if (ImGui::Button("Clash"))
-				gameID = Clash;
 
 			ImGui::Columns(1);
 
@@ -627,8 +629,7 @@ public:
 			{
 				for (Json::Value::ArrayIndex i = 0; i < root.size(); i++)
 				{
-					if (root[i]["freeToPlay"].asBool() == true || root[i]["ownership"]["owned"].asBool() == true ||
-						(root[i]["ownership"].isMember("xboxGPReward") && root[i]["ownership"]["xboxGPReward"].asBool() == true))
+					if (root[i]["freeToPlay"].asBool() == true || root[i]["ownership"]["owned"].asBool() == true || (root[i]["ownership"].isMember("xboxGPReward") && root[i]["ownership"]["xboxGPReward"].asBool() == true))
 					{
 						std::pair<int, std::string > champ = { root[i]["id"].asInt() , root[i]["alias"].asString() };
 						temp.emplace_back(champ);
@@ -1110,8 +1111,7 @@ public:
 			if (runes.size() == 9)
 				break;
 
-			if (buf.find("src=\"https://opgg-static.akamaized.net/images/lol/perk") != std::string::npos
-				|| buf.find("src=\"https://opgg-static.akamaized.net/meta/images/lol/perk") != std::string::npos)
+			if (buf.find("src=\"https://opgg-static.akamaized.net/images/lol/perk") != std::string::npos || buf.find("src=\"https://opgg-static.akamaized.net/meta/images/lol/perk") != std::string::npos)
 			{
 				if (buf.find("grayscale") != std::string::npos)
 					continue;

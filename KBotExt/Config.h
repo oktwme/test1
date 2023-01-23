@@ -33,6 +33,8 @@ struct Settings
 	struct
 	{
 		std::string playerName;
+		int floodTimes = 1;
+		int floodDelay = 0;
 	}infoTab;
 
 	struct
@@ -116,6 +118,8 @@ public:
 				root["loginTab"]["leagueArgs"] = S.loginTab.leagueArgs;
 				root["streamProof"] = S.streamProof;
 
+				root["infoTab"]["floodTimes"] = S.infoTab.floodTimes;
+				root["infoTab"]["floodDelay"] = S.infoTab.floodDelay;
 				root["infoTab"]["playerName"] = S.infoTab.playerName;
 
 				root["customTab"]["method"] = S.customTab.method;
@@ -200,6 +204,8 @@ public:
 				if (auto t = root["streamProof"]; !t.empty()) S.streamProof = t.asBool();
 
 				if (auto t = root["infoTab"]["playerName"]; !t.empty()) S.infoTab.playerName = t.asString();
+				if (auto t = root["infoTab"]["floodTimes"]; !t.empty()) S.infoTab.floodTimes = t.asInt();
+				if (auto t = root["infoTab"]["floodDelay"]; !t.empty()) S.infoTab.floodDelay = t.asInt();
 
 				if (auto t = root["customTab"]["method"]; !t.empty()) S.customTab.method = t.asString();
 				if (auto t = root["customTab"]["urlText"]; !t.empty()) S.customTab.urlText = t.asString();
