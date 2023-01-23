@@ -12,7 +12,7 @@
 * Works every patch
 * Launch multiple clients
 * Language changer
-* Start any lobby/game 
+* Start any lobby/game
 * Custom bots difficulty
 * The fastest instalock, auto accept, instant message and auto ban
 * Automatically pick a secondary, or dodge if your champion is banned
@@ -20,7 +20,7 @@
 * Dodge lobbies without closing the client
 * Mass invite all friends to lobby
 * Open multi-search op.gg/u.gg/poro.gg/porofessor.gg with all players in a champion select (works in ranked)
-* Set the best runes for your selected champion
+* Set the best runes for your selected champion from op.gg
 * Play any champion/skin for free (Refund exploit)
 * Set custom icon/background/status/rank/mastery visible for everyone
 * Set empty challenge badges (tokens)
