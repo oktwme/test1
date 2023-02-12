@@ -12,8 +12,20 @@ class Misc
 {
 public:
 
-	static inline std::string programVersion = "1.2.2";
+	static inline std::string programVersion = "1.2.3";
 	static inline std::string latestVersion = "";
+
+	static bool LaunchClient(const std::string args)
+	{
+		const std::string path = std::format("{}LeagueClient.exe", S.leaguePath).c_str();
+		if (S.noAdmin)
+		{
+			if (Utils::RunAsUser(Utils::StringToWstring(path).c_str(), &(Utils::StringToWstring(args))[0]))
+				return true;
+		}
+		ShellExecuteA(NULL, "open", path.c_str(), args.c_str(), NULL, SW_SHOWNORMAL);
+		return false;
+	}
 
 	static void LaunchLegacyClient()
 	{
@@ -174,15 +186,22 @@ public:
 
 	static void TaskKillLeague()
 	{
-		Misc::TerminateProcessByName(L"RiotClientServices.exe");
-		Misc::TerminateProcessByName(L"RiotClientCrashHandler.exe");
-		Misc::TerminateProcessByName(L"RiotClientUx.exe");
-		Misc::TerminateProcessByName(L"RiotClientUxRender.exe");
+		std::vector<std::wstring>leagueProcs = {
+			L"RiotClientCrashHandler.exe",
+			L"RiotClientServices.exe",
+			L"RiotClientUx.exe",
+			L"RiotClientUxRender.exe",
 
-		Misc::TerminateProcessByName(L"LeagueClient.exe");
-		Misc::TerminateProcessByName(L"LeagueCrashHandler.exe");
-		Misc::TerminateProcessByName(L"LeagueClientUx.exe");
-		Misc::TerminateProcessByName(L"LeagueClientUxRender.exe");
+			L"LeagueCrashHandler.exe",
+			L"LeagueClient.exe",
+			L"LeagueClientUx.exe",
+			L"LeagueClientUxRender.exe"
+		};
+
+		for (const auto& proc : leagueProcs)
+		{
+			Misc::TerminateProcessByName(proc);
+		}
 	}
 
 	static std::string ChampIdToName(int id)
@@ -205,6 +224,9 @@ public:
 		return "";
 	}
 
+	// Terminate all league related processes,
+	// remove read only and hidden property from files
+	// and delete them
 	static std::string ClearLogs()
 	{
 		std::string result = "";
@@ -215,40 +237,35 @@ public:
 
 		std::error_code errorCode;
 
-		std::string logsFolder = S.leaguePath + "Logs";
-		if (std::filesystem::exists(logsFolder))
-		{
-			SetFileAttributesA(logsFolder.c_str(), GetFileAttributesA(logsFolder.c_str()) & ~FILE_ATTRIBUTE_READONLY & ~FILE_ATTRIBUTE_HIDDEN);
-			std::filesystem::remove_all(logsFolder, errorCode);
-			result += logsFolder + " - " + errorCode.message() + "\n";
-		}
+		auto leaguePath = std::filesystem::path(S.leaguePath);
 
-		std::string configFolder = S.leaguePath + "Config";
-		if (std::filesystem::exists(configFolder))
-		{
-			SetFileAttributesA(configFolder.c_str(), GetFileAttributesA(configFolder.c_str()) & ~FILE_ATTRIBUTE_READONLY & ~FILE_ATTRIBUTE_HIDDEN);
-			std::filesystem::remove_all(configFolder, errorCode);
-			result += configFolder + " - " + errorCode.message() + "\n";
-		}
-
-		std::string programData = "C:/ProgramData/Riot Games";
-		if (std::filesystem::exists(programData))
-		{
-			SetFileAttributesA(programData.c_str(), GetFileAttributesA(programData.c_str()) & ~FILE_ATTRIBUTE_READONLY & ~FILE_ATTRIBUTE_HIDDEN);
-			std::filesystem::remove_all(programData, errorCode);
-			result += programData + " - " + errorCode.message() + "\n";
-		}
+		auto riotClientPath = std::filesystem::path(
+			S.leaguePath.substr(0, S.leaguePath.find_last_of("/\\", S.leaguePath.size() - 2))) / "Riot Client";
 
 		char* pLocal;
 		size_t localLen;
 		_dupenv_s(&pLocal, &localLen, "LOCALAPPDATA");
-		std::string local = pLocal;
-		local += "\\Riot Games";
-		if (std::filesystem::exists(local))
+		auto localAppData = std::filesystem::path(pLocal);
+
+		std::vector<std::filesystem::path> leagueFiles = {
+			leaguePath / "Logs",
+			leaguePath / "Config",
+			leaguePath / "debug.log",
+			riotClientPath / "UX" / "natives_blob.bin",
+			riotClientPath / "UX" / "snapshot_blob.bin",
+			riotClientPath / "UX" / "v8_context_snapshot.bin",
+			riotClientPath / "UX" / "icudtl.dat",
+			localAppData / "Riot Games"
+		};
+
+		for (const auto& file : leagueFiles)
 		{
-			SetFileAttributesA(local.c_str(), GetFileAttributesA(local.c_str()) & ~FILE_ATTRIBUTE_READONLY & ~FILE_ATTRIBUTE_HIDDEN);
-			std::filesystem::remove_all(local, errorCode);
-			result += local + " - " + errorCode.message() + "\n";
+			if (std::filesystem::exists(file))
+			{
+				SetFileAttributesA(file.string().c_str(), GetFileAttributesA(file.string().c_str()) & ~FILE_ATTRIBUTE_READONLY & ~FILE_ATTRIBUTE_HIDDEN);
+				std::filesystem::remove_all(file, errorCode);
+				result += file.string() + " - " + errorCode.message() + "\n";
+			}
 		}
 
 		int counter = 0;
@@ -334,7 +351,7 @@ namespace ImGui
 				ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
 			}
 			AddUnderLine(ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
-			ImGui::SetTooltip("Open in browser\n%s", url);
+			ImGui::SetTooltip("  Open in browser\n%s", url);
 		}
 		else
 		{
