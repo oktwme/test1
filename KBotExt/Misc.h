@@ -12,7 +12,7 @@ class Misc
 {
 public:
 
-	static inline std::string programVersion = "1.2.3";
+	static inline std::string programVersion = "1.2.4";
 	static inline std::string latestVersion = "";
 
 	static bool LaunchClient(const std::string args)
@@ -108,7 +108,7 @@ public:
 
 	static std::string GetCurrentPatch()
 	{
-		std::string result = HTTP::Request("GET", "https://ddragon.leagueoflegends.com/api/versions.json");
+		std::string result = HTTP::Request("GET", "http://ddragon.leagueoflegends.com/api/versions.json");
 		Json::CharReaderBuilder builder;
 		const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 		JSONCPP_STRING err;
@@ -351,7 +351,7 @@ namespace ImGui
 				ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL);
 			}
 			AddUnderLine(ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered]);
-			ImGui::SetTooltip("  Open in browser\n%s", url);
+			ImGui::SetTooltip("Open in browser\n%s", url);
 		}
 		else
 		{
