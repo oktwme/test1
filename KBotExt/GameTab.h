@@ -478,7 +478,7 @@ public:
 			if ((lastInstalockId != S.gameTab.instalockId) && !isStillBeingFetched)
 			{
 				lastInstalockId = S.gameTab.instalockId;
-				chosenInstalock = "Instalock champ \t\tChosen: " + Misc::ChampIdToName(S.gameTab.instalockId) + "###AnimatedInstalock";
+				chosenInstalock = "Instalock champ/Instapick champ \t\tChosen: " + Misc::ChampIdToName(S.gameTab.instalockId) + "###AnimatedInstalock";
 			}
 			if (ImGui::CollapsingHeader(chosenInstalock.c_str()))
 			{
@@ -884,9 +884,11 @@ public:
 												if (S.gameTab.instalockEnabled == 1)
 													LCU::Request("PATCH", "https://127.0.0.1/lol-champ-select/v1/session/actions/" + actions[i]["id"].asString(),
 														R"({"completed":true,"championId":)" + std::to_string(currentPick) + "}");
-												else
+												else {
 													LCU::Request("PATCH", "https://127.0.0.1/lol-champ-select/v1/session/actions/" + actions[i]["id"].asString(),
 														R"({"championId":)" + std::to_string(currentPick) + "}");
+													isPicked = true;
+												}
 											}
 										}
 										else
