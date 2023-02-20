@@ -3,6 +3,10 @@
 [More screenshots](https://imgur.com/a/OFgtemU)
 
 
+## Download
+- [x64](https://github.com/BennyExtreme/KBotExt/releases/latest/download/KBotExt.exe)
+- [x86](https://github.com/BennyExtreme/KBotExt/releases/latest/download/KBotExt_x86.exe)
+
 ## Technologies used
 * No external libraries, only win32 functions for HTTP requests
 * JsonCpp
@@ -47,8 +51,9 @@
 * (Patched) Free skin and free champion (Riot Girl Tristana)
 * (Patched) Free ARAM boost
 
-## Development
+## Development/Building
 
+- **Install [GIT for windows](https://git-scm.com/download/win)**
 - **Installing [vcpkg](https://github.com/microsoft/vcpkg#quick-start-windows) and [freetype](https://github.com/ocornut/imgui/tree/master/misc/freetype)**
   1. Open Windows Command Prompt (**CMD**)
   2. Run `git clone https://github.com/microsoft/vcpkg.git`
@@ -57,8 +62,9 @@
   5. `vcpkg integrate install`
   6. `vcpkg install freetype:x86-windows-static` or `vcpkg install freetype:x64-windows-static`
 - **Building the project**
-  1. Clone the repository
-  2. Open **KBotExt.sln** in Visual Studio (Recommended Visual Studio 2022)
-  3. Set the solution platform to the freetype version you have installed
-  4. Build the project
-  5. Feel free to make a pull request with your changes :-)
+  1. Open Windows Command Prompt (**CMD**)
+  2. Clone the repository with `git clone https://github.com/BennyExtreme/KBotExt.git`
+  3. Open **KBotExt.sln** in Visual Studio (Recommended Visual Studio 2022)
+  4. Set the solution platform to the freetype version you have installed
+  5. Build the project
+  6. Feel free to make a pull request with your changes :-)
