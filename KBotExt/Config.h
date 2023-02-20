@@ -63,7 +63,7 @@ struct Settings
 		size_t indexSecondRole = 0;
 		size_t indexMultiSearch = 0;
 		bool autoAcceptEnabled = false;
-		bool instalockEnabled = false;
+		int instalockEnabled = 0;
 		bool autoBanEnabled = false;
 		int instalockId = 0;
 		int instalockDelay = 0;
@@ -205,7 +205,7 @@ public:
 				if (auto t = root["gameTab"]["indexSecondRole"]; !t.empty()) S.gameTab.indexSecondRole = t.asUInt();
 				if (auto t = root["gameTab"]["indexMultiSearch"]; !t.empty()) S.gameTab.indexMultiSearch = t.asUInt();
 				if (auto t = root["gameTab"]["autoAcceptEnabled"]; !t.empty()) S.gameTab.autoAcceptEnabled = t.asBool();
-				if (auto t = root["gameTab"]["instalockEnabled"]; !t.empty()) S.gameTab.instalockEnabled = t.asBool();
+				if (auto t = root["gameTab"]["instalockEnabled"]; !t.empty()) S.gameTab.instalockEnabled = t.asInt();
 				if (auto t = root["gameTab"]["autoBanEnabled"]; !t.empty()) S.gameTab.autoBanEnabled = t.asBool();
 				if (auto t = root["gameTab"]["instalockDelay"]; !t.empty()) S.gameTab.instalockDelay = t.asInt();
 				if (auto t = root["gameTab"]["instalockId"]; !t.empty()) S.gameTab.instalockId = t.asInt();

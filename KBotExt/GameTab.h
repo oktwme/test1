@@ -453,7 +453,9 @@ public:
 
 			ImGui::Columns(3, 0, false);
 
-			ImGui::Checkbox("Instalock", &S.gameTab.instalockEnabled);
+			ImGui::RadioButton("Off", &S.gameTab.instalockEnabled, 0); ImGui::SameLine();
+			ImGui::RadioButton("Instalock", &S.gameTab.instalockEnabled, 1); ImGui::SameLine();
+			ImGui::RadioButton("Instapick", &S.gameTab.instalockEnabled, 2);
 			ImGui::NextColumn();
 
 			ImGui::SliderInt("Delay##sliderInstalockDelay", &S.gameTab.instalockDelay, 0, 10000, "%d ms");
@@ -471,7 +473,7 @@ public:
 			if (!champSkins.empty())
 				isStillBeingFetched = false;
 
-			static std::string chosenInstalock = "Instalock champ \t\tChosen: " + Misc::ChampIdToName(S.gameTab.instalockId) + "###AnimatedInstalock";
+			static std::string chosenInstalock = "Instalock/Instapick champ \t\tChosen: " + Misc::ChampIdToName(S.gameTab.instalockId) + "###AnimatedInstalock";
 			static int lastInstalockId = 0;
 			if ((lastInstalockId != S.gameTab.instalockId) && !isStillBeingFetched)
 			{
@@ -782,8 +784,8 @@ public:
 			}
 
 			if (S.gameTab.autoAcceptEnabled || (S.gameTab.autoBanEnabled && S.gameTab.autoBanId) ||
-				(S.gameTab.dodgeOnBan && S.gameTab.instalockEnabled) ||
-				(S.gameTab.instalockEnabled && S.gameTab.instalockId) ||
+				(S.gameTab.dodgeOnBan && S.gameTab.instalockEnabled != 0) ||
+				(S.gameTab.instalockEnabled != 0 && S.gameTab.instalockId) ||
 				!S.gameTab.instantMessage.empty())
 			{
 				Json::Value rootSearch;
@@ -843,7 +845,7 @@ public:
 						}
 					}
 
-					if ((S.gameTab.instalockEnabled || S.gameTab.autoBanId) && !isPicked)
+					if ((S.gameTab.instalockEnabled != 0 || S.gameTab.autoBanId) && !isPicked)
 					{
 						// get own summid
 						std::string getSession = LCU::Request("GET", "https://127.0.0.1/lol-login/v1/session");
@@ -866,7 +868,7 @@ public:
 								if (actions[i]["actorCellId"].asInt() == cellId)
 								{
 									std::string actionType = actions[i]["type"].asString();
-									if (actionType == "pick" && S.gameTab.instalockId && S.gameTab.instalockEnabled)
+									if (actionType == "pick" && S.gameTab.instalockId && S.gameTab.instalockEnabled != 0)
 									{
 										// if havent picked yet
 										if (actions[i]["completed"].asBool() == false)
@@ -879,8 +881,12 @@ public:
 												if (useBackupId)
 													currentPick = useBackupId;
 
-												LCU::Request("PATCH", "https://127.0.0.1/lol-champ-select/v1/session/actions/" + actions[i]["id"].asString(),
-													R"({"completed":true,"championId":)" + std::to_string(currentPick) + "}");
+												if (S.gameTab.instalockEnabled == 1)
+													LCU::Request("PATCH", "https://127.0.0.1/lol-champ-select/v1/session/actions/" + actions[i]["id"].asString(),
+														R"({"completed":true,"championId":)" + std::to_string(currentPick) + "}");
+												else
+													LCU::Request("PATCH", "https://127.0.0.1/lol-champ-select/v1/session/actions/" + actions[i]["id"].asString(),
+														R"({"championId":)" + std::to_string(currentPick) + "}");
 											}
 										}
 										else
@@ -900,7 +906,7 @@ public:
 									}
 								}
 								// action that isn't our player, if dodge on ban enabled or backup pick
-								else if ((S.gameTab.dodgeOnBan || S.gameTab.backupId) && S.gameTab.instalockEnabled && S.gameTab.instalockId)
+								else if ((S.gameTab.dodgeOnBan || S.gameTab.backupId) && S.gameTab.instalockEnabled != 0 && S.gameTab.instalockId)
 								{
 									if (isPicked)
 										break;

@@ -18,7 +18,7 @@
 * Language changer
 * Start any lobby/game
 * Custom bots difficulty
-* The fastest instalock, auto accept, instant message and auto ban
+* The fastest instalock, instapick, auto accept, instant message and auto ban
 * Automatically pick a secondary, or dodge if your champion is banned
 * Instantly mute everyone in champion select
 * Dodge lobbies without closing the client
