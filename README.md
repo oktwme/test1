@@ -68,3 +68,33 @@
   4. Set the solution platform to the freetype version you have installed
   5. Build the project
   6. Feel free to make a pull request with your changes :-)
+
+## FAQ
+
+* When i open KBotExt the program gets stuck on "Fetching skin data..."
+  * First Solution:
+	* Close KBotExt if you have it open
+    * Open "Windows Firewall" (`firewall.cpl`)
+	* Click on "Turn Windows Defender Firewall on or off"
+	* Select "Turn off Windows Defender Firewall (not recommended)" in all the networks fields
+	* Try to open KBotExt again, it should work.
+	> If this solution works for you, consider adding an exception for KBotExt in the Firewall instead of disabling it completely.
+  * Second Solution:
+	* Close KBotExt if you have it open
+	* Open all the antivirus software you have installed on your PC (including Windows Defender)
+	* Disable them
+	* Try to open KBotExt again, it should work.
+	> If this solution works for you, consider adding an exception for KBotExt in your antivirus instead of disabling it completely.
+  * Third Solution:
+    * Close KBotExt if you have it open
+    * Open "Internet Properties" (inetcpl.cpl)
+    * Go to "Advanced" tab
+    * Click the "Restore advanced settings" button
+    * Save the changes and close the window by clicking the "OK" button
+    * Try to open KBotExt again, it should work.
+* Does this tool injects something inside League of Legends process or its client?
+  * No, as also written in the repository description this tool only interfaces with the internal League of Legends API (called LCU) through simple network requests, all this is done externally and using a library already contained in all windows installations (WinINet).
+* Does the avoid button allow you to not have the time restriction on the queue?
+  * No, as also written within the tool the button was created to allow you to avoid a game without having to close and reopen the game but simply with a click.
+* Does the "Start queue" button allow you to bypass any queue restriction?
+  * No.
