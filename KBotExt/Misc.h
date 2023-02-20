@@ -12,7 +12,7 @@ class Misc
 {
 public:
 
-	static inline std::string programVersion = "1.2.4";
+	static inline std::string programVersion = "1.2.5";
 	static inline std::string latestVersion = "";
 
 	static bool LaunchClient(const std::string args)
@@ -85,7 +85,7 @@ public:
 				{
 					if (MessageBoxA(0, "Download latest version?", "New major version available", MB_YESNO | MB_SETFOREGROUND) == IDYES)
 					{
-						ShellExecuteW(0, 0, L"https://github.com/BennyExtreme/KBotExt/releases/latest/download/KBotExt.exe", 0, 0, SW_SHOW);
+						ShellExecuteW(0, 0, L"https://github.com/BennyExtreme/KBotExt/releases/latest", 0, 0, SW_SHOW);
 					}
 				}
 			}
@@ -95,7 +95,7 @@ public:
 				const auto status = MessageBoxA(0, "Download latest version?\nCancel to ignore this version forever", "New minor update available", MB_YESNOCANCEL | MB_SETFOREGROUND);
 				if (status == IDYES)
 				{
-					ShellExecuteW(0, 0, L"https://github.com/BennyExtreme/KBotExt/releases/latest/download/KBotExt.exe", 0, 0, SW_SHOW);
+					ShellExecuteW(0, 0, L"https://github.com/BennyExtreme/KBotExt/releases/latest", 0, 0, SW_SHOW);
 				}
 				else if (status == IDCANCEL)
 				{

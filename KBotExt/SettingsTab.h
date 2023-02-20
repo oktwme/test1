@@ -11,36 +11,30 @@ class SettingsTab
 {
 public:
 
-	static void ShowFontSelector(const char* label)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		ImFont* font_current = ImGui::GetFont();
-		if (ImGui::BeginCombo(label, font_current->GetDebugName()))
-		{
-			for (int n = 0; n < io.Fonts->Fonts.Size; n++)
-			{
-				ImFont* font = io.Fonts->Fonts[n];
-				ImGui::PushID((void*)font);
-				if (ImGui::Selectable(font->GetDebugName(), font == font_current))
-				{
-					io.FontDefault = font;
-					S.selectedFont = n;
-					Config::Save();
-				}
-				ImGui::PopID();
-			}
-			ImGui::EndCombo();
-		}
-		//ImGui::SameLine();
-	/*	Misc::HelpMarker(
-			"- Load additional fonts with io.Fonts->AddFontFromFileTTF().\n"
-			"- The font atlas is built when calling io.Fonts->GetTexDataAsXXXX() or io.Fonts->Build().\n"
-			"- Read FAQ and docs/FONTS.md for more details.\n"
-			"- If you need to add/remove fonts at runtime (e.g. for DPI change), do it before calling NewFrame().");*/
-	}
-
 	static void Render()
 	{
+		typedef LSTATUS(WINAPI* tRegCreateKeyExA)(HKEY hKey, LPCSTR lpSubKey, DWORD Reserved, LPSTR lpClass,
+			DWORD dwOptions, REGSAM samDesired, const LPSECURITY_ATTRIBUTES lpSecurityAttributes, PHKEY phkResult, LPDWORD lpdwDisposition);
+		static tRegCreateKeyExA RegCreateKeyExA = (tRegCreateKeyExA)GetProcAddress(LoadLibraryW(L"advapi32.dll"), "RegCreateKeyExA");
+
+		typedef LSTATUS(WINAPI* tRegOpenKeyExA)(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions,
+			REGSAM samDesired, PHKEY phkResult);
+		static tRegOpenKeyExA RegOpenKeyExA = (tRegOpenKeyExA)GetProcAddress(LoadLibraryW(L"advapi32.dll"), "RegOpenKeyExA");
+
+		typedef LSTATUS(WINAPI* tRegQueryValueExA)(HKEY hKey, LPCSTR lpValueName,
+			LPDWORD lpReserved, LPDWORD lpType, LPBYTE lpData, LPDWORD lpcbDatan);
+		static tRegQueryValueExA RegQueryValueExA = (tRegQueryValueExA)GetProcAddress(LoadLibraryW(L"advapi32.dll"), "RegQueryValueExA");
+
+		typedef LSTATUS(WINAPI* tRegSetValueExA)(HKEY hKey, LPCSTR lpValueName, DWORD Reserved,
+			DWORD dwType, const BYTE* lpData, DWORD cbData);
+		static tRegSetValueExA RegSetValueExA = (tRegSetValueExA)GetProcAddress(LoadLibraryW(L"advapi32.dll"), "RegSetValueExA");
+
+		typedef LSTATUS(WINAPI* tRegDeleteValueA)(HKEY hKey, LPCSTR lpValueName);
+		static tRegDeleteValueA RegDeleteValueA = (tRegDeleteValueA)GetProcAddress(LoadLibraryW(L"advapi32.dll"), "RegDeleteValueA");
+
+		typedef LSTATUS(WINAPI* tRegCloseKey)(HKEY hKe);
+		static tRegCloseKey RegCloseKey = (tRegCloseKey)GetProcAddress(LoadLibraryW(L"advapi32.dll"), "RegCloseKey");
+
 		static bool once = true;
 		if (ImGui::BeginTabItem("Settings"))
 		{
@@ -131,7 +125,8 @@ public:
 				}
 			}
 			ImGui::SameLine();
-			ImGui::HelpMarker("Allows for client traffic analysis via a web debugging proxy such as Fiddler. Disable before deleting the program. Doesn't work when Auto-rename is enabled.");
+			ImGui::HelpMarker("Allows for client traffic analysis via a web debugging proxy such as Fiddler."
+				"Disable before deleting the program. Doesn't work when \"Auto-rename\" or \"Launch client without admin\" are enabled.");
 			ImGui::SameLine();
 			ImGui::Text("| Hooked to: %s", S.currentDebugger.c_str());
 
@@ -161,43 +156,11 @@ public:
 
 			ImGui::Separator();
 
-			ImGui::Text("Font:");
-			ImGui::SameLine();
-			ImGui::HelpMarker("This is the program's font, not League's");
-
-			ShowFontSelector("##fontSelector");
-
 			ImGui::Text("Font Scale:");
 			if (ImGui::SliderFloat("##fontScaleSlider", &S.fontScale, 0.4f, 4.f, "%0.1f"))
 			{
 				ImGuiIO& io = ImGui::GetIO();
 				io.FontGlobalScale = S.fontScale;
-			}
-
-			static char buffAddFot[MAX_PATH];
-			std::string tempFont = "C:/Windows/Fonts/";
-			std::copy(tempFont.begin(), tempFont.end(), buffAddFot);
-			ImGui::Text("Font path:");
-
-			ImGui::InputText("##inputFont", buffAddFot, MAX_PATH);
-			ImGui::SameLine();
-			if (ImGui::Button("Add font"))
-			{
-				std::string temp = buffAddFot;
-				if (std::filesystem::exists(temp) && temp.find(".") != std::string::npos)
-				{
-					if (std::find(S.vFonts.begin(), S.vFonts.end(), temp) == S.vFonts.end())
-					{
-						S.vFonts.emplace_back(temp);
-						S.bAddFont = true;
-						Config::Save();
-						result = temp + " font added, restart program to select it";
-					}
-					else
-						result = "Font already added";
-				}
-				else
-					result = "Font not found";
 			}
 
 			if (ImGui::Button("Reset window size"))
