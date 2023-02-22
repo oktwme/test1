@@ -123,45 +123,45 @@ void LCU::GetLeagueProcesses()
 		std::thread t([currentIndex, currInfo]()
 			{
 				short sessionFailCount = 0;
-		while (true)
-		{
-			std::string procSession = HTTP::Request("GET", "https://127.0.0.1/lol-login/v1/session", "", currInfo.header, "", "", currInfo.port);
-
-			// probably legacy client
-			if (procSession.find("errorCode") != std::string::npos)
-			{
-				sessionFailCount++;
-				if (sessionFailCount > 5)
+				while (true)
 				{
-					LCU::leagueProcesses[currentIndex].second = "!FAILED!";
-					break;
-				}
-				std::this_thread::sleep_for(std::chrono::milliseconds(300));
-				continue;
-			}
+					std::string procSession = HTTP::Request("GET", "https://127.0.0.1/lol-login/v1/session", "", currInfo.header, "", "", currInfo.port);
 
-			Json::CharReaderBuilder builder;
-			const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-			JSONCPP_STRING err;
-			Json::Value root;
-
-			if (reader->parse(procSession.c_str(), procSession.c_str() + static_cast<int>(procSession.length()), &root, &err))
-			{
-				std::string currSummId = root["summonerId"].asString();
-				// player has summId when client is loaded
-				if (!currSummId.empty())
-				{
-					std::string currSummoner = HTTP::Request("GET", "https://127.0.0.1/lol-summoner/v1/summoners/" + currSummId,
-						"", currInfo.header, "", "", currInfo.port);
-					if (reader->parse(currSummoner.c_str(), currSummoner.c_str() + static_cast<int>(currSummoner.length()), &root, &err))
+					// probably legacy client
+					if (procSession.find("errorCode") != std::string::npos)
 					{
-						LCU::leagueProcesses[currentIndex].second = std::string(root["displayName"].asString().substr(0, 25));
-						break;
+						sessionFailCount++;
+						if (sessionFailCount > 5)
+						{
+							LCU::leagueProcesses[currentIndex].second = "!FAILED!";
+							break;
+						}
+						std::this_thread::sleep_for(std::chrono::milliseconds(300));
+						continue;
 					}
+
+					Json::CharReaderBuilder builder;
+					const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+					JSONCPP_STRING err;
+					Json::Value root;
+
+					if (reader->parse(procSession.c_str(), procSession.c_str() + static_cast<int>(procSession.length()), &root, &err))
+					{
+						std::string currSummId = root["summonerId"].asString();
+						// player has summId when client is loaded
+						if (!currSummId.empty())
+						{
+							std::string currSummoner = HTTP::Request("GET", "https://127.0.0.1/lol-summoner/v1/summoners/" + currSummId,
+								"", currInfo.header, "", "", currInfo.port);
+							if (reader->parse(currSummoner.c_str(), currSummoner.c_str() + static_cast<int>(currSummoner.length()), &root, &err))
+							{
+								LCU::leagueProcesses[currentIndex].second = std::string(root["displayName"].asString().substr(0, 25));
+								break;
+							}
+						}
+					}
+					std::this_thread::sleep_for(std::chrono::milliseconds(300));
 				}
-			}
-			std::this_thread::sleep_for(std::chrono::milliseconds(300));
-		}
 			});
 		t.detach();
 	}
