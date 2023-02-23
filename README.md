@@ -72,25 +72,34 @@
 ## FAQ
 
 * When i open KBotExt the program gets stuck on "Fetching skin data..."
-  * First Solution:
-	* Close KBotExt if you have it open
-    * Open "Windows Firewall" (`firewall.cpl`)
-	* Click on "Turn Windows Defender Firewall on or off"
-	* Select "Turn off Windows Defender Firewall (not recommended)" in all the networks fields
-	* Try to open KBotExt again, it should work.
-	> If this solution works for you, consider adding an exception for KBotExt in the Firewall instead of disabling it completely.
-  * Second Solution:
-	* Close KBotExt if you have it open
-	* Open all the antivirus software you have installed on your PC (including Windows Defender)
-	* Disable them
-	* Try to open KBotExt again, it should work.
-	> If this solution works for you, consider adding an exception for KBotExt in your antivirus instead of disabling it completely.
-  * Third Solution:
+  * First solution:
     * Close KBotExt if you have it open
-    * Open "Internet Properties" (inetcpl.cpl)
+    * Open "Windows Firewall" (`firewall.cpl`)
+    * Click on "Turn Windows Defender Firewall on or off"
+    * Select "Turn off Windows Defender Firewall (not recommended)" in all the networks fields
+    * Try to open KBotExt again, it should work, otherwise follow the steps described in the next solution.
+    > If this solution works for you, consider adding an exception for KBotExt in the Firewall instead of disabling it completely.
+  * Second solution:
+    * Close KBotExt if you have it open
+    * Open all the antivirus software you have installed on your PC (including Windows Defender)
+    * Disable them
+    * Try to open KBotExt again, it should work, otherwise follow the steps described in the next solution.
+    > If this solution works for you, consider adding an exception for KBotExt in your antivirus instead of disabling it completely.
+  * Third solution:
+    * Open the Settings tab in KBotExt
+    * Click on the "Internet Properties Repair" button
+    * Once finished a window will appear to confirm the successful repair, click on OK. The program will be automatically closed.
+    * Try to open KBotExt again, it should work, otherwise follow the steps described in the next solution.
+  * Fourth solution:
+    * Close KBotExt if you have it open
+    * Open "Internet Properties" (`inetcpl.cpl`)
     * Go to "Advanced" tab
     * Click the "Restore advanced settings" button
-    * Save the changes and close the window by clicking the "OK" button
+    * Save the changes by clicking the "Apply" button
+	* Click the "Reset" button below the previous one
+	* Check the box "Delete personal settings" in the window that will appear
+	* Click on the "Reset" button
+	* Close the window by clicking the "Close" button
     * Try to open KBotExt again, it should work.
 * Does this tool injects something inside League of Legends process or its client?
   * No, as also written in the repository description this tool only interfaces with the internal League of Legends API (called LCU) through simple network requests, all this is done externally and using a library already contained in all windows installations (WinINet).

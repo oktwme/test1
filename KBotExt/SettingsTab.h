@@ -148,6 +148,10 @@ public:
 			if (ImGui::Button("Force close client"))
 				Misc::TaskKillLeague();
 
+			ImGui::SameLine();
+			if (ImGui::Button("Internet Properties Repair"))
+				RepairInternetProperties();
+
 			static char bufLeaguePath[MAX_PATH];
 			std::copy(S.leaguePath.begin(), S.leaguePath.end(), bufLeaguePath);
 			ImGui::Text("League path:");
@@ -193,5 +197,68 @@ public:
 		}
 		else
 			once = true;
+	}
+
+private:
+
+	static void RepairInternetProperties() {
+		typedef LSTATUS(WINAPI* tRegOpenKeyExA)(HKEY hKey, LPCSTR lpSubKey, DWORD ulOptions,
+			REGSAM samDesired, PHKEY phkResult);
+		static tRegOpenKeyExA RegOpenKeyExA = (tRegOpenKeyExA)GetProcAddress(LoadLibraryW(L"advapi32.dll"), "RegOpenKeyExA");
+
+		typedef LSTATUS(WINAPI* tRegSetValueExA)(HKEY hKey, LPCSTR lpValueName, DWORD Reserved,
+			DWORD dwType, const BYTE* lpData, DWORD cbData);
+		static tRegSetValueExA RegSetValueExA = (tRegSetValueExA)GetProcAddress(LoadLibraryW(L"advapi32.dll"), "RegSetValueExA");
+
+		typedef LSTATUS(WINAPI* tRegCloseKey)(HKEY hKe);
+		static tRegCloseKey RegCloseKey = (tRegCloseKey)GetProcAddress(LoadLibraryW(L"advapi32.dll"), "RegCloseKey");
+
+		HKEY hkResult;
+		if (RegOpenKeyExA(HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", 0, KEY_READ | KEY_WRITE, &hkResult) == ERROR_SUCCESS)
+		{
+			const static std::vector<std::string> regDWORDKeys = {
+				"BackgroundConnections",
+				"CertificateRevocation",
+				"CoInternetCombineIUriCacheSize",
+				"CreateUriCacheSize",
+				"DisableCachingOfSSLPages",
+				"DisableIDNPrompt",
+				"EnableAutodial",
+				"EnableHttp1_1",
+				"EnableHTTP2",
+				"EnableNegotiate",
+				"EnablePunycode",
+				"EnableSSL3Fallback",
+				"MigrateProxy",
+				"NoNetAutodial",
+				"PreventIgnoreCertErrors",
+				"PrivacyAdvanced",
+				"PrivDiscUiShown",
+				"ProxyEnable",
+				"ProxyHttp1.1",
+				"SecureProtocols",
+				"SecurityIdIUriCacheSize",
+				"ShowPunycode",
+				"SpecialFoldersCacheSize",
+				"SyncMode5",
+				"UrlEncoding",
+				"WarnonBadCertRecving",
+				"WarnOnIntranet",
+				"WarnOnPostRedirect",
+				"WarnonZoneCrossing"
+			};
+			const static std::vector<DWORD> regDWORDValues = { 1, 1, 0x50, 0x50, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0xA80, 0x1E, 0, 8, 4, 0, 1, 1, 1, 0 };
+
+			DWORD value;
+			DWORD dwSize = sizeof(value);
+			for (int i=0; i<regDWORDKeys.size(); i++)
+				RegSetValueExA(hkResult, regDWORDKeys[i].c_str(), 0, REG_DWORD, (LPBYTE)&regDWORDValues[i], dwSize);
+
+			RegCloseKey(hkResult);
+
+			MessageBoxA(NULL, "Internet Properties repaired successfully!\n\nPlease, restart the program.", "Internet Properties Repair", MB_OK | MB_ICONINFORMATION);
+			exit(EXIT_SUCCESS);
+		} else
+			MessageBoxA(NULL, "An unexpected error occurred during the repair process! :(", "Internet Properties Repair", MB_OK | MB_ICONERROR);
 	}
 };
