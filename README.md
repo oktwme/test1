@@ -88,7 +88,7 @@
   * Third solution:
     * Open the Settings tab in KBotExt
     * Click on the "Internet Properties Repair" button
-    * Once finished a window will appear to confirm the successful repair, click on OK. The program will be automatically closed.
+    * Once finished a window will appear to confirm the successful repair, click on "OK". The program will be automatically closed.
     * Try to open KBotExt again, it should work, otherwise follow the steps described in the next solution.
   * Fourth solution:
     * Close KBotExt if you have it open
