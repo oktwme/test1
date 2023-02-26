@@ -1,6 +1,6 @@
-![Example](https://i.imgur.com/ACMxyEC.png)
+![Example](https://i.imgur.com/vjPGL8u.png)
 
-[More screenshots](https://imgur.com/a/OFgtemU)
+[More screenshots](https://imgur.com/a/ijCiC3F)
 
 
 ## Download
