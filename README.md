@@ -14,6 +14,7 @@
 
 ## Features
 * Works every patch
+* Free ARAM Boost
 * Launch multiple clients
 * Language changer
 * Start any lobby/game
@@ -49,7 +50,6 @@
 * Lobby invites flooder
 * (Partially patched) Check the email linked to account you're logged on
 * (Patched) Free skin and free champion (Riot Girl Tristana)
-* (Patched) Free ARAM boost
 
 ## Development/Building
 
