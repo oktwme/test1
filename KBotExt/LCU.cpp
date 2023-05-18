@@ -1,11 +1,13 @@
 #include <json/json.h>
 #include <thread>
+#include "Utils.h"
 
 #include "LCU.h"
-#include "HTTP.h"
 
 std::string LCU::Request(const std::string& method, const std::string& endpoint, const std::string& body)
 {
+	if (league.port == 0)
+		return "Not connected to League";
 	std::string sURL = endpoint;
 	if (sURL.find("https://127.0.0.1") == std::string::npos)
 	{
@@ -15,10 +17,54 @@ std::string LCU::Request(const std::string& method, const std::string& endpoint,
 				sURL.erase(sURL.begin());
 			if (sURL[0] != '/')
 				sURL.insert(0, "/");
-			sURL.insert(0, "https://127.0.0.1");
+			sURL.insert(0, "https://127.0.0.1:" + std::to_string(league.port));
 		}
 	}
-	return HTTP::Request(method, sURL, body, league.header, "", "", league.port);
+	else if (sURL.find("https://127.0.0.1:") == std::string::npos)
+	{
+		sURL.insert(strlen("https://127.0.0.1"), ":" + std::to_string(league.port));
+	}
+
+	/*wrap::Response r = wrap::HttpsRequest(wrap::Method{ method }, wrap::Url{ sURL }, wrap::Body{ body }, wrap::Header{ league.header }, wrap::Port{ league.port },
+		wrap::Timeout{1000});*/
+
+	cpr::Response r;
+
+	LCU::session.SetUrl(sURL);
+	LCU::session.SetBody(body);
+
+	const std::string upperMethod = Utils::ToUpper(method);
+
+	if (upperMethod == "GET")
+	{
+		r = LCU::session.Get();
+	}
+	else if (upperMethod == "POST")
+	{
+		r = LCU::session.Post();
+	}
+	else if (upperMethod == "OPTIONS")
+	{
+		r = LCU::session.Options();
+	}
+	else if (upperMethod == "DELETE")
+	{
+		r = LCU::session.Delete();
+	}
+	else if (upperMethod == "PUT")
+	{
+		r = LCU::session.Put();
+	}
+	else if (upperMethod == "HEAD")
+	{
+		r = LCU::session.Head();
+	}
+	else if (upperMethod == "PATCH")
+	{
+		r = LCU::session.Patch();
+	}
+
+	return r.text;
 }
 
 bool LCU::SetRiotClientInfo(const ClientInfo& info)
@@ -48,6 +94,11 @@ bool LCU::SetLeagueClientInfo(const ClientInfo& info)
 		return false;
 
 	league.header = Auth::MakeLeagueHeader(info);
+
+	session = cpr::Session();
+	session.SetVerifySsl(false);
+
+	session.SetHeader(Utils::StringToHeader(league.header));
 
 	return true;
 }
@@ -125,7 +176,11 @@ void LCU::GetLeagueProcesses()
 				short sessionFailCount = 0;
 				while (true)
 				{
-					std::string procSession = HTTP::Request("GET", "https://127.0.0.1/lol-login/v1/session", "", currInfo.header, "", "", currInfo.port);
+					cpr::Session session;
+					session.SetVerifySsl(false);
+					session.SetHeader(Utils::StringToHeader(currInfo.header));
+					session.SetUrl(std::format("https://127.0.0.1:{}/lol-login/v1/session", currInfo.port));
+					std::string procSession = session.Get().text;
 
 					// probably legacy client
 					if (procSession.find("errorCode") != std::string::npos)
@@ -151,8 +206,9 @@ void LCU::GetLeagueProcesses()
 						// player has summId when client is loaded
 						if (!currSummId.empty())
 						{
-							std::string currSummoner = HTTP::Request("GET", "https://127.0.0.1/lol-summoner/v1/summoners/" + currSummId,
-								"", currInfo.header, "", "", currInfo.port);
+							session.SetUrl(std::format("https://127.0.0.1:{}/lol-summoner/v1/summoners/{}", currInfo.port, currSummId));
+							std::string currSummoner = session.Get().text;
+
 							if (reader->parse(currSummoner.c_str(), currSummoner.c_str() + static_cast<int>(currSummoner.length()), &root, &err))
 							{
 								LCU::leagueProcesses[currentIndex].second = std::string(root["displayName"].asString().substr(0, 25));
