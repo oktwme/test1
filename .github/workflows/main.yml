@@ -3,7 +3,6 @@ name: Build
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 env:
   SOLUTION_FILE_PATH: .\KBotExt.sln
@@ -44,6 +43,9 @@ jobs:
       
       - name: Install FreeType x64
         run: .\vcpkg\vcpkg install freetype:x64-windows-static
+        
+      - name: Install cpr x64
+        run: .\vcpkg\vcpkg install cpr:x64-windows-static
       
       - name: Build KBotExt x64 solution
         working-directory: .\
@@ -85,6 +87,9 @@ jobs:
       
       - name: Install FreeType x86
         run: .\vcpkg\vcpkg install freetype:x86-windows-static
+      
+      - name: Install cpr x86
+        run: .\vcpkg\vcpkg install cpr:x86-windows-static
       
       - name: Build KBotExt x86 solution
         working-directory: .\
