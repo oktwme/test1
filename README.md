@@ -8,7 +8,7 @@
 - [x86](https://github.com/BennyExtreme/KBotExt/releases/latest/download/KBotExt_x86.exe)
 
 ## Technologies used
-* No external libraries, only win32 functions for HTTP requests
+* cpr
 * JsonCpp
 * DirectX 11 with ImGui
 
@@ -60,14 +60,15 @@
   3. `cd vcpkg`
   4. `bootstrap-vcpkg.bat`
   5. `vcpkg integrate install`
-  6. `vcpkg install freetype:x86-windows-static` or `vcpkg install freetype:x64-windows-static`
+  6. `vcpkg install freetype:x64-windows-static` or/and `vcpkg install freetype:x86-windows-static`
+  7. `vcpkg install cpr:x64-windows-static` or/and `vcpkg install cpr:x86-windows-static`
 - **Building the project**
-  1. Open Windows Command Prompt (**CMD**)
-  2. Clone the repository with `git clone https://github.com/BennyExtreme/KBotExt.git`
-  3. Open **KBotExt.sln** in Visual Studio (Recommended Visual Studio 2022)
-  4. Set the solution platform to the freetype version you have installed
-  5. Build the project
-  6. Feel free to make a pull request with your changes :-)
+  * Open Windows Command Prompt (**CMD**)
+  * Clone the repository with `git clone https://github.com/BennyExtreme/KBotExt.git`
+  * Open **KBotExt.sln** in Visual Studio (Recommended Visual Studio 2022)
+  * Set the solution platform to the freetype version you have installed
+  * Build the project
+  * Feel free to make a pull request with your changes :-)
 
 ## FAQ
 
@@ -85,24 +86,8 @@
     * Disable them
     * Try to open KBotExt again, it should work, otherwise follow the steps described in the next solution.
     > If this solution works for you, consider adding an exception for KBotExt in your antivirus instead of disabling it completely.
-  * Third solution:
-    * Open the Settings tab in KBotExt
-    * Click on the "Internet Properties Repair" button
-    * Once finished a window will appear to confirm the successful repair, click on "OK". The program will be automatically closed.
-    * Try to open KBotExt again, it should work, otherwise follow the steps described in the next solution.
-  * Fourth solution:
-    * Close KBotExt if you have it open
-    * Open "Internet Properties" (`inetcpl.cpl`)
-    * Go to "Advanced" tab
-    * Click the "Restore advanced settings" button
-    * Save the changes by clicking the "Apply" button
-	* Click the "Reset" button below the previous one
-	* Check the box "Delete personal settings" in the window that will appear
-	* Click on the "Reset" button
-	* Close the window by clicking the "Close" button
-    * Try to open KBotExt again, it should work.
 * Does this tool injects something inside League of Legends process or its client?
-  * No, as also written in the repository description this tool only interfaces with the internal League of Legends API (called LCU) through simple network requests, all this is done externally and using a library already contained in all windows installations (WinINet).
+  * No, as also written in the repository description this tool only interfaces with the internal League of Legends API (called LCU) through simple network requests, all this is done externally and using a wrapper called cpr (that uses libcurl).
 * Does the avoid button allow you to not have the time restriction on the queue?
   * No, as also written within the tool the button was created to allow you to avoid a game without having to close and reopen the game but simply with a click.
 * Does the "Start queue" button allow you to bypass any queue restriction?
