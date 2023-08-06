@@ -145,6 +145,7 @@
       <EnableModules>true</EnableModules>
       <FloatingPointModel>
       </FloatingPointModel>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

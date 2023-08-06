@@ -70,6 +70,9 @@
   * Build the project
   * Feel free to make a pull request with your changes :-)
 
+## Upgrading solution
+* `devenv "KBotExt.sln" /upgrade`
+
 ## FAQ
 
 * When i open KBotExt the program gets stuck on "Fetching skin data..."
