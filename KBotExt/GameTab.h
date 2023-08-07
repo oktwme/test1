@@ -361,7 +361,7 @@ public:
 
 			ImGui::Separator();
 
-			ImGui::Columns(3, 0, false);
+			ImGui::Columns(4, 0, false);
 			ImGui::Checkbox("Auto accept", &S.gameTab.autoAcceptEnabled);
 
 			ImGui::NextColumn();
@@ -420,6 +420,62 @@ public:
 			}
 			ImGui::SameLine();
 			ImGui::HelpMarker("Buy a champion, pick it during a game and click this button before the game ends, no refund token will be used to refund it");
+
+			ImGui::NextColumn();
+
+			if (ImGui::Button("Refund all purchases"))
+			{
+				if (MessageBoxA(0, "Are you sure?", "Refunding all purchases", MB_OKCANCEL) == IDOK)
+				{
+					Json::CharReaderBuilder builder;
+					const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+					JSONCPP_STRING err;
+					Json::Value rootPurchaseHistory;
+
+					cpr::Header storeHeader = Utils::StringToHeader(LCU::GetStoreHeader());
+
+					std::string storeUrl = LCU::Request("GET", "/lol-store/v1/getStoreUrl");
+					storeUrl.erase(std::remove(storeUrl.begin(), storeUrl.end(), '"'), storeUrl.end());
+
+					std::string purchaseHistory = cpr::Get(cpr::Url{ storeUrl + "/storefront/v3/history/purchase" }, cpr::Header{ storeHeader }).text;
+					if (reader->parse(purchaseHistory.c_str(), purchaseHistory.c_str() + static_cast<int>(purchaseHistory.length()), &rootPurchaseHistory, &err))
+					{
+						std::string accountId = rootPurchaseHistory["player"]["accountId"].asString();
+						Json::Value transactions = rootPurchaseHistory["transactions"];
+
+						int refundedChampsN = 0;
+						std::string refundedChamps;
+
+						for (Json::Value::ArrayIndex i = 0; i < transactions.size(); i++)
+						{
+							if (transactions[i]["inventoryType"].asString() == "CHAMPION") {
+								if (transactions[i]["refundable"].asBool() == false && transactions[i]["refundabilityMessage"].asString() != "TOO_SOON_TO_REFUND")
+									continue;
+
+								std::string transactionId = transactions[i]["transactionId"].asString();
+								cpr::Post(cpr::Url{ storeUrl + "/storefront/v3/refund" }, cpr::Header{ storeHeader },
+									cpr::Body{ "{\"accountId\":" + accountId + ",\"transactionId\":\"" + transactionId + "\",\"inventoryType\":\"CHAMPION\",\"language\":\"en_US\"}" }).text;
+
+								int itemId = transactions[i]["itemId"].asInt();
+								std::string amountSpent = transactions[i]["amountSpent"].asString() + " " + (transactions[i]["currencyType"].asString() == "IP" ? "BE" : transactions[i]["currencyType"].asString());
+								refundedChamps += "\n- " + ChampIdToName(itemId) + " (" + amountSpent + ")";
+								refundedChampsN++;
+
+								if (i != transactions.size()-1)
+									std::this_thread::sleep_for(std::chrono::seconds(1));
+							}
+						}
+
+						result = "Refunded " + std::to_string(refundedChampsN) + " champions" + refundedChamps + "\nDone!";
+					}
+					else
+					{
+						result = purchaseHistory;
+					}
+				}
+			}
+			ImGui::SameLine();
+			ImGui::HelpMarker("Buy multiple champions, pick one of them during a game and click this button before the game ends, no refund token will be used to refund them");
 
 			ImGui::Columns(1);
 
