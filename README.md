@@ -95,3 +95,20 @@
   * No, as also written within the tool the button was created to allow you to avoid a game without having to close and reopen the game but simply with a click.
 * Does the "Start queue" button allow you to bypass any queue restriction?
   * No.
+* I want to play Wukong but I can't find him in KBotExt
+  * In KBotExt Wukong is called by its internal name that is MonkeyKing.
+* How the ARAM boost works? / Why am I not eligible for the exploit? / It took away my RPs after using the boost
+  * The way it works is simple, you need to have at least 95 RP in your account.
+    If you have at least 95 RP and there is a champ that you don't have (and you can buy it) the program buys it.
+    
+    > [!IMPORTANT]
+    > If you use during a game the champion that KBotExt buys, you can no longer get your RPs back.
+    > So for example, if KBotExt buys Annie with your RPs, for the duration of the exploit you must not select Annie in your games.
+    
+    You can later use boost for 24h (for as many games as you are able to play) and refund the champ using the tool again to get your RP back.
+    
+    > [!NOTE]
+    > You must refund the champion before the 24 hours expire and at least 1 hour after your last game, otherwise your RPs will not be given back to you.
+    
+    There is a "Is boost available for my account?" button in the program, which shows whether Boost is available and how much longer you can use boost.
+    If the amount of RPs in your account minus the cost of a champ does not reach an amount less than 95 for the program you are not eligible for the exploit, you have too many RPs.
