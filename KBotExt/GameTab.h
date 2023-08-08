@@ -42,11 +42,14 @@ public:
 
 			if (ImGui::Button("ARAM"))
 				gameID = ARAM;
+			
+			if (ImGui::Button("Arena"))
+				gameID = Arena;
 
-			if (ImGui::Button("ARURF"))
+			/*if (ImGui::Button("ARURF"))
 				gameID = ARURF;
 
-			/*if (ImGui::Button("Nexus Blitz"))
+			if (ImGui::Button("Nexus Blitz"))
 				gameID = NexusBlitz;
 
 			if (ImGui::Button("URF"))
