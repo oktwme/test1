@@ -21,7 +21,7 @@ class Misc
 {
 public:
 
-	static inline std::string programVersion = "1.3.9";
+	static inline std::string programVersion = "1.4.0";
 	static inline std::string latestVersion = "";
 
 	static bool LaunchClient(const std::string args)
@@ -88,20 +88,10 @@ public:
 			std::vector<std::string>latestNameSplit = Utils::StringSplit(latestTag, ".");
 			std::vector<std::string>programVersionSplit = Utils::StringSplit(Misc::programVersion, ".");
 
-			for (size_t i = 0; i < 2; i++)
-			{
-				if (latestNameSplit[i] != programVersionSplit[i])
-				{
-					if (MessageBoxA(0, "Open download website?", "New major version available", MB_YESNO | MB_SETFOREGROUND) == IDYES)
-					{
-						ShellExecuteW(0, 0, L"https://github.com/BennyExtreme/KBotExt/releases/latest", 0, 0, SW_SHOW);
-					}
-				}
-			}
 			if (latestTag != Misc::programVersion
 				&& std::find(S.ignoredVersions.begin(), S.ignoredVersions.end(), latestTag) == S.ignoredVersions.end())
 			{
-				const auto status = MessageBoxA(0, "Open download website?\nCancel to ignore this version forever", "New minor update available", MB_YESNOCANCEL | MB_SETFOREGROUND);
+				const auto status = MessageBoxA(0, "Open download website?\nCancel to ignore this version forever", "New update available", MB_YESNOCANCEL | MB_SETFOREGROUND);
 				if (status == IDYES)
 				{
 					ShellExecuteW(0, 0, L"https://github.com/BennyExtreme/KBotExt/releases/latest", 0, 0, SW_SHOW);
