@@ -1344,10 +1344,11 @@ public:
 												session.SetUrl(std::format("https://127.0.0.1:{}/lol-champ-select/v1/session/actions/{}", LCU::league.port, actions[i]["id"].asString()));
 												if (S.gameTab.instalockEnabled == 1)
 													session.SetBody(R"({"completed":true,"championId":)" + std::to_string(currentPick) + "}");
-												else
+												else {
 													session.SetBody(R"({"championId":)" + std::to_string(currentPick) + "}");
+													isPicked = true;
+												}
 												session.Patch();
-												isPicked = true;
 											}
 										}
 										else
