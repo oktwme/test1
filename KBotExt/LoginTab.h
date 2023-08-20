@@ -236,22 +236,10 @@ public:
 				authData["response_type"] = "token id_token";
 				authData["scope"] = "openid offline_access lol ban profile email phone birthdate summoner link lol_region";
 
-				Json::CharReaderBuilder builder;
-				const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-				JSONCPP_STRING err;
-
-				std::string valApiReq = cpr::Get(cpr::Url{"https://valorant-api.com/v1/version"}).text;
-				Json::Value valRoot;
-				std::string riotClientBuild;
-				if (reader->parse(valApiReq.c_str(), valApiReq.c_str() + static_cast<int>(valApiReq.length()), &valRoot, &err))
-				{
-					riotClientBuild = valRoot["data"]["riotClientBuild"].asString();
-				}
-
 				cpr::Header authHeader = {
 					{"Content-Type", "application/json"},
 					{"Accept-Encoding", "deflate"},
-					{"User-Agent", "RiotClient/" + riotClientBuild + " rso-auth (Windows; 10;;Professional, x64)"},
+					{"User-Agent", "RiotClient/69.0.3.228.1352 rso-auth (Windows; 10;;Professional, x64)"},
 					{"Pragma", "no-cache"},
 					{"Accept-Language", "en-GB,en,*"},
 					{"Accept", "application/json, text/plain, */*"}
@@ -259,6 +247,16 @@ public:
 
 				cpr::Session session;
 				session.SetHeader(authHeader);
+
+				std::string valoApi = cpr::Get(cpr::Url{ "https://valorant-api.com/v1/version" }).text;
+
+				std::regex regexStr("\"riotClientBuild\":\"(.*?)\"");
+				std::smatch m;
+				if (std::regex_search(valoApi, m, regexStr))
+				{
+					session.UpdateHeader(cpr::Header{ { "User-Agent", "RiotClient/" + m[1].str() + " rso-auth (Windows; 10;;Professional, x64)"}});
+				}
+
 				session.SetBody(authData.toStyledString());
 				session.SetUrl("https://auth.riotgames.com/api/v1/authorization");
 				session.Post();
@@ -275,6 +273,9 @@ public:
 				session.SetUrl("https://auth.riotgames.com/api/v1/authorization");
 				std::string r = session.Put().text;
 
+				Json::CharReaderBuilder builder;
+				const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+				JSONCPP_STRING err;
 				Json::Value rootAuth;
 				banCheck = r;
 				if (r.find("\"error\"") == std::string::npos && reader->parse(r.c_str(), r.c_str() + static_cast<int>(r.length()), &rootAuth, &err))
