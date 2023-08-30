@@ -239,7 +239,7 @@ public:
 				cpr::Header authHeader = {
 					{"Content-Type", "application/json"},
 					{"Accept-Encoding", "deflate"},
-					{"User-Agent", "ShooterGame/11 Windows/10.0.22621.1.768.64bit"},
+					{"User-Agent", "ShooterGame/13 Windows/10.0.22621.1.768.64bit"},
 					{"Pragma", "no-cache"},
 					{"Accept-Language", "en-GB,en,*"},
 					{"Accept", "application/json, text/plain, */*"}
@@ -247,6 +247,15 @@ public:
 
 				cpr::Session session;
 				session.SetHeader(authHeader);
+
+				std::string valoApi = cpr::Get(cpr::Url{ "https://valorant-api.com/v1/version" }).text;
+
+				std::regex regexStr("\"buildVersion\":\"(.*?)\"");
+				std::smatch m;
+				if (std::regex_search(valoApi, m, regexStr))
+				{
+					session.UpdateHeader(cpr::Header{ { "User-Agent", "ShooterGame/" + m[1].str() + " Windows/10.0.22621.1.768.64bit"}});
+				}
 
 				session.SetBody(authData.toStyledString());
 				session.SetUrl("https://auth.riotgames.com/api/v1/authorization");
