@@ -18,6 +18,42 @@ public:
 		{
 			static std::string result;
 			static std::string custom;
+			
+			static std::vector < std::pair<long, std::string>>gamemodes;
+
+			if (onOpen)
+			{
+				if (gamemodes.empty())
+				{
+					std::string getQueues = LCU::Request("GET", "/lol-game-queues/v1/queues");
+					Json::CharReaderBuilder builder;
+					const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+					JSONCPP_STRING err;
+					Json::Value root;
+					if (reader->parse(getQueues.c_str(), getQueues.c_str() + static_cast<int>(getQueues.length()), &root, &err))
+					{
+						if (root.isArray())
+						{
+							for (Json::Value::ArrayIndex i = 0; i < root.size(); i++)
+							{
+								if (root[i]["queueAvailability"].asString() != "Available")
+									continue;
+
+								long id = root[i]["id"].asInt64();
+								std::string name = root[i]["name"].asString();
+								name += " " + std::to_string(id);
+								//std::cout << id << " " << name << std::endl;
+								std::pair<long, std::string>temp = { id, name };
+								gamemodes.emplace_back(temp);
+							}
+
+							std::sort(gamemodes.begin(), gamemodes.end(), [](auto& left, auto& right) {
+								return left.first < right.first;
+								});
+						}
+					}
+				}
+			}
 
 			static std::vector<std::string>firstPosition = { "UNSELECTED", "TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY", "FILL" };
 			static std::vector<std::string>secondPosition = { "UNSELECTED", "TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY", "FILL" };
@@ -43,17 +79,20 @@ public:
 			if (ImGui::Button("ARAM"))
 				gameID = ARAM;
 			
-			if (ImGui::Button("Arena"))
+			/*if (ImGui::Button("Arena"))
 				gameID = Arena;
 
-			/*if (ImGui::Button("ARURF"))
+			if (ImGui::Button("ARURF"))
 				gameID = ARURF;
+
+			if (ImGui::Button("ARURF 1V1 (PBE)"))
+				gameID = ARURF1v1;
 
 			if (ImGui::Button("Nexus Blitz"))
 				gameID = NexusBlitz;
 
 			if (ImGui::Button("URF"))
-				gameID = 318;*/
+				gameID = URF;*/
 
 			if (ImGui::Button("Clash"))
 				gameID = Clash;
@@ -121,6 +160,31 @@ public:
 				custom = R"({"customGameLobby":{"configuration":{"gameMode":"ARAM","gameMutator":"","gameServerRegion":"","mapId":12,"mutators":{"id":1},"spectatorPolicy":"AllAllowed","teamSize":5},"lobbyName":"KBot","lobbyPassword":null},"isCustom":true})";
 
 			//"id" 1- blind 2- draft -4 all random 6- tournament draft
+
+			static int indexGamemodes = -1;
+			const char* labelGamemodes = "All Gamemodes";
+			if (indexGamemodes != -1)
+				labelGamemodes = gamemodes[indexGamemodes].second.c_str();
+
+			if (ImGui::BeginCombo("##combolGamemodes", labelGamemodes, 0))
+			{
+				for (size_t n = 0; n < gamemodes.size(); n++)
+				{
+					const bool is_selected = (indexGamemodes == n);
+					if (ImGui::Selectable(gamemodes[n].second.c_str(), is_selected))
+						indexGamemodes = n;
+
+					if (is_selected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::SameLine();
+
+			if (ImGui::Button("Create##gamemode"))
+			{
+				gameID = gamemodes[indexGamemodes].first;
+			}
 
 			ImGui::NextColumn();
 

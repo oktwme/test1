@@ -72,6 +72,7 @@ inline std::vector<Skin>ownedSkins;
 
 enum QueueID : const int
 {
+	URF = 318,
 	DraftPick = 400,
 	SoloDuo = 420,
 	BlindPick = 430,
@@ -82,6 +83,7 @@ enum QueueID : const int
 	BeginnerBots = 840,
 	IntermediateBots = 850,
 	ARURF = 900,
+	ARURF1v1 = 901,
 	TFTNormal = 1090,
 	TFTRanked = 1100,
 	TFTTutorial = 1110,
