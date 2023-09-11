@@ -21,7 +21,7 @@ class Misc
 {
 public:
 
-	static inline std::string programVersion = "1.4.5";
+	static inline std::string programVersion = "1.4.6";
 	static inline std::string latestVersion = "";
 
 	static bool LaunchClient(const std::string args)
