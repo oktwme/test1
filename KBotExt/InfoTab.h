@@ -130,6 +130,14 @@ public:
 				LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", invite);
 				invite = R"([{"toSummonerId":)" + summID + R"(}])";
 				LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", invite);
+                                LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", invite);
+                                LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", invite);
+                                LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", invite);
+                                LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", invite);
+                                LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", invite);
+                                LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", invite);
+                                LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", invite);
+                                LCU::Request("POST", "https://127.0.0.1/lol-lobby/v2/lobby/invitations", invite);
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("Invite to friends##infoTab"))
