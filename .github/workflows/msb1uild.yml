@@ -1,44 +1,61 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: MSBuild
-
 on:
   push:
-    branches: [ "KebsCS" ]
-  pull_request:
-    branches: [ "KebsCS" ]
-
-env:
-  # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: .
-
-  # Configuration type to build.
-  # You can convert this to a build matrix if you need coverage of multiple configuration types.
-  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: Release
-
-permissions:
-  contents: read
+    branches:
+      - main
 
 jobs:
   build:
-    runs-on: windows-latest
+    permissions:
+      id-token: write
+      contents: write
+    runs-on: windows-2022
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@main
 
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      - uses: actions/checkout@master
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
 
-    - name: Restore NuGet packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+      - name: Get short SHA
+        run: echo "SHORT_SHA=$("${{ github.sha }}".SubString(0, 8))" >> $env:GITHUB_ENV
 
-    - name: Build
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      # Add additional options to the MSBuild command line here (like platform or verbosity level).
-      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+      - uses: microsoft/setup-msbuild@v1.1
+
+      - run: .\vcpkg\bootstrap-vcpkg.bat
+      - run: .\vcpkg\vcpkg integrate install
+      - run: .\vcpkg\vcpkg install freetype:x86-windows-static
+      - run: .\vcpkg\vcpkg install cpr:x86-windows-static
+      - run: .\vcpkg\vcpkg install jsoncpp:x86-windows-static
+
+      - name: Build solution
+        run: msbuild KBotExt.sln /p:Platform="x86" /p:Configuration=Release -m
+
+      - name: Upload build outputs
+        uses: actions/upload-artifact@v3
+        with:
+          name: KBotExt-${{ env.SHORT_SHA }}
+          path: Release/KBotExt.exe
+      
+      - name: Tag Repo
+        uses: richardsimko/update-tag@v1
+        with:
+          tag_name: prerelease
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          artifacts: "D:/a/KBotExt/KBotExt/Release/KBotExt.exe"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: prerelease
+          name: KBotExt-${{ env.SHORT_SHA }}
+          allowUpdates: true
+          generateReleaseNotes: true
+          makeLatest: true
+          prerelease: true
+          updateOnlyUnreleased: true # Only update the latest release if it is not marked as released. Set it to true if needed.
